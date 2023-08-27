@@ -15,5 +15,6 @@ model Media {
   title    String
   username String
 
+  @@unique([title, username])
   @@map("medias")
 }

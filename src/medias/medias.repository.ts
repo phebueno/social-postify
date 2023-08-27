@@ -6,7 +6,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export class MediasRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(data: CreateMediaDto) {
+  create(data: CreateMediaDto) {    
     return this.prisma.media.create({ data });
   }
 
