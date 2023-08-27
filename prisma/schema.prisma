@@ -11,10 +11,32 @@ datasource db {
 }
 
 model Media {
-  id       Int    @id @default(autoincrement())
+  id       Int           @id @default(autoincrement())
   title    String
   username String
+  posts    Publication[]
 
   @@unique([title, username])
   @@map("medias")
+}
+
+model Post {
+  id     Int           @id @default(autoincrement())
+  title  String
+  text   String
+  image  String?
+  medias Publication[]
+
+  @@map("posts")
+}
+
+model Publication {
+  id      Int      @id @default(autoincrement())
+  post    Post     @relation(fields: [postId], references: [id])
+  postId  Int
+  media   Media    @relation(fields: [mediaId], references: [id])
+  mediaId Int
+  date    DateTime @default(now())
+
+  @@map("publications")
 }
