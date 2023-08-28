@@ -16,7 +16,10 @@ export class PostsRepository {
   }
 
   findOne(id: number) {
-    return this.prisma.post.findFirst({ where: { id } });
+    return this.prisma.post.findFirst({
+      include: { medias: true },
+      where: { id },
+    });
   }
 
   update(id: number, data: CreatePostDto) {

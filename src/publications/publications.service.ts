@@ -1,4 +1,10 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { CreatePublicationDto } from './dto/create-publication.dto';
 import { PublicationsRepository } from './publications.repository';
 import { PostsRepository } from '../posts/posts.repository';
@@ -8,9 +14,9 @@ import { getPublicationByPublishedStatus } from '../utils/publication-utils';
 @Injectable()
 export class PublicationsService {
   constructor(
-    private readonly repository: PublicationsRepository,
     private readonly postsRepository: PostsRepository,
     private readonly mediasRepository: MediasRepository,
+    private readonly repository: PublicationsRepository,
   ) {}
 
   async create(body: CreatePublicationDto) {
@@ -22,10 +28,14 @@ export class PublicationsService {
 
   async findAll(published: string, after: string) {
     const publications = await this.repository.findAll();
-    if(published || after){
-      const filteredPubs = getPublicationByPublishedStatus(publications, published, after);
+    if (published || after) {
+      const filteredPubs = getPublicationByPublishedStatus(
+        publications,
+        published,
+        after,
+      );
       return filteredPubs;
-    } 
+    }
     return publications;
   }
 
@@ -38,7 +48,8 @@ export class PublicationsService {
   async update(id: number, body: CreatePublicationDto) {
     const publication = await this.repository.findOne(id);
     if (!publication) throw new NotFoundException('Publication not found!');
-    if (publication.date < new Date(Date.now())) throw new ForbiddenException('Already published!');
+    if (publication.date < new Date(Date.now()))
+      throw new ForbiddenException('Already published!');
     const post = await this.postsRepository.findOne(body.postId);
     const media = await this.mediasRepository.findMediaById(body.mediaId);
     if (!post || !media) throw new NotFoundException('Post/media not found!');
